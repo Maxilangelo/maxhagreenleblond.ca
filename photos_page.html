@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style_general.css">
+    <link rel="stylesheet" href="style_photos.css">
+    <title>Photos-MaxHL</title>
+    <noscript>
+        <style>
+            .gallery img { display: block; height: var(--row-height); width: auto; }
+        </style>
+    </noscript>
+</head>
+<body>
+    <div class="header">
+        <div class="inner_header">
+            <div class="logo_container">
+                <a href="index.html">
+                    <h1> <img src="H.jpg" alt="H"><img src="L.jpg" alt="L"></h1>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!--
+        TO ADD A PHOTO:
+        1. Put the picture file in a folder called "photos" next to this page.
+        2. Add one line like the ones below, inside the gallery div.
+        Photos show in the same order as the lines. Move a line to reorder. 
+    -->
+    <div class="gallery" id="gallery">
+        <img src="Photos gallery /lemocello.jpg" alt="">
+        <img src="Photos gallery /rollingACig.jpg" alt="">
+        <img src="Photos gallery /napolibeach.JPG" alt="">
+        <img src="Photos gallery /fjord.jpg" alt="">
+        <img src="Photos gallery /darkvenice.jpg" alt="">
+        <img src="Photos gallery /parisrunner.jpg" alt="">
+        <img src="Photos gallery /jakobrolling.jpg" alt="">
+        <img src="Photos gallery /pig.jpg" alt="">
+        <img src="Photos gallery /napoliocean.jpeg" alt="">
+        <img src="Photos gallery /angoulemeview.jpg" alt="">
+        <img src="Photos gallery /avagarden.jpg" alt="">
+        <img src="Photos gallery /bikesbarn.jpg" alt="">
+        <img src="Photos gallery /burntbuilding.jpg" alt="">
+        <img src="Photos gallery /deadbird.jpg" alt="">
+        <img src="Photos gallery /ducks.jpg" alt="">
+        <img src="Photos gallery /germanylake.jpg" alt="">
+        <img src="Photos gallery /lakebooze.jpg" alt="">
+        <img src="Photos gallery /maxcooking.jpg" alt="">
+        <img src="Photos gallery /parisbuilding.jpg" alt="">
+        <img src="Photos gallery /paristrain.jpg" alt="">
+        <img src="Photos gallery /trondheim.jpg" alt="">
+        <img src="Photos gallery /paulatrain.jpg" alt="">
+        <img src="Photos gallery /wheat.jpg" alt="">
+        <img src="Photos gallery /restaurant.jpg" alt="">
+        <img src="Photos gallery /veniceboat.JPG" alt="">
+        <img src="Photos gallery /rollerbladecops.jpg" alt="">
+        <img src="Photos gallery /venicehotel.JPG" alt="">
+        <img src="Photos gallery /tintinkiss.jpg" alt="">
+        <img src="Photos gallery /toilet.jpg" alt="">
+    </div>
+
+    <!-- full-screen viewer (you don't need to touch this) -->
+    <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
+        <button class="lb_btn lb_close" id="lb_close" aria-label="Close">
+            <svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19"/></svg>
+        </button>
+        <button class="lb_btn lb_prev" id="lb_prev" aria-label="Previous photo">
+            <svg viewBox="0 0 24 24"><path d="M15 4l-8 8 8 8"/></svg>
+        </button>
+        <img class="lightbox_img" id="lb_img" src="" alt="">
+        <button class="lb_btn lb_next" id="lb_next" aria-label="Next photo">
+            <svg viewBox="0 0 24 24"><path d="M9 4l8 8-8 8"/></svg>
+        </button>
+        <div class="lb_count" id="lb_count"></div>
+    </div>
+
+    <script>
+        // Sizes each photo from its own shape so every photo in a row ends up the same height.
+        // You don't need to touch this.
+        document.querySelectorAll('#gallery img').forEach(function (img) {
+            function size() {
+                if (!img.naturalWidth || !img.naturalHeight) return;
+                var ratio = img.naturalWidth / img.naturalHeight;
+                img.style.flexGrow = ratio * 100; // keep the total above 1 so a lone photo still fills its row
+                img.style.flexBasis = 'calc(var(--row-height) * ' + ratio + ')';
+                img.classList.add('ready');
+            }
+            if (img.complete) { size(); } else { img.addEventListener('load', size); }
+        });
+
+        // Full-screen viewer: click a photo to open it, then use the arrows,
+        // the left/right keys, or swipe. Esc, the X, or a tap outside closes it.
+        (function () {
+            var gallery = document.getElementById('gallery');
+            var box = document.getElementById('lightbox');
+            var big = document.getElementById('lb_img');
+            var count = document.getElementById('lb_count');
+            var closeBtn = document.getElementById('lb_close');
+            var photos = [];
+            var current = 0;
+            var opener = null;
+
+            function show(i) {
+                current = (i + photos.length) % photos.length; // wraps around at the ends
+                big.src = photos[current].src;
+                big.alt = photos[current].alt;
+                count.textContent = (current + 1) + ' / ' + photos.length;
+                // quietly load the neighbours so the next click is instant
+                [current - 1, current + 1].forEach(function (n) {
+                    new Image().src = photos[(n + photos.length) % photos.length].src;
+                });
+            }
+
+            function open(img) {
+                photos = Array.prototype.slice.call(gallery.querySelectorAll('img'));
+                opener = img;
+                show(photos.indexOf(img));
+                box.classList.add('open');
+                document.documentElement.classList.add('lb_open');
+                closeBtn.focus();
+            }
+
+            function close() {
+                box.classList.remove('open');
+                document.documentElement.classList.remove('lb_open');
+                big.src = '';
+                if (opener) opener.focus();
+            }
+
+            gallery.addEventListener('click', function (e) {
+                if (e.target.tagName === 'IMG') open(e.target);
+            });
+            gallery.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' && e.target.tagName === 'IMG') open(e.target);
+            });
+            gallery.querySelectorAll('img').forEach(function (img) { img.tabIndex = 0; });
+
+            closeBtn.addEventListener('click', close);
+            document.getElementById('lb_prev').addEventListener('click', function () { show(current - 1); });
+            document.getElementById('lb_next').addEventListener('click', function () { show(current + 1); });
+            box.addEventListener('click', function (e) { if (e.target === box) close(); });
+
+            document.addEventListener('keydown', function (e) {
+                if (!box.classList.contains('open')) return;
+                if (e.key === 'Escape') close();
+                if (e.key === 'ArrowLeft') show(current - 1);
+                if (e.key === 'ArrowRight') show(current + 1);
+            });
+
+            // swipe left / right on a phone
+            var startX = 0, startY = 0;
+            box.addEventListener('touchstart', function (e) {
+                startX = e.changedTouches[0].clientX;
+                startY = e.changedTouches[0].clientY;
+            }, { passive: true });
+            box.addEventListener('touchend', function (e) {
+                var dx = e.changedTouches[0].clientX - startX;
+                var dy = e.changedTouches[0].clientY - startY;
+                if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) show(current + (dx < 0 ? 1 : -1));
+            }, { passive: true });
+        })();
+    </script>
+</body>
+</html>
