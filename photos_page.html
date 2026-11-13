@@ -23,12 +23,7 @@
         </div>
     </div>
 
-    <!--
-        TO ADD A PHOTO:
-        1. Put the picture file in a folder called "photos" next to this page.
-        2. Add one line like the ones below, inside the gallery div.
-        Photos show in the same order as the lines. Move a line to reorder. 
-    -->
+   
     <div class="gallery" id="gallery">
         <img src="lemocello.jpg" alt="">
         <img src="rollingACig.jpg" alt="">
@@ -61,7 +56,7 @@
         <img src="toilet.jpg" alt="">
     </div>
 
-    <!-- full-screen viewer (you don't need to touch this) -->
+    <!-- full-screen viewer -->
     <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
         <button class="lb_btn lb_close" id="lb_close" aria-label="Close">
             <svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19"/></svg>
@@ -78,7 +73,7 @@
 
     <script>
         // Sizes each photo from its own shape so every photo in a row ends up the same height.
-        // You don't need to touch this.
+    
         document.querySelectorAll('#gallery img').forEach(function (img) {
             function size() {
                 if (!img.naturalWidth || !img.naturalHeight) return;
@@ -90,8 +85,6 @@
             if (img.complete) { size(); } else { img.addEventListener('load', size); }
         });
 
-        // Full-screen viewer: click a photo to open it, then use the arrows,
-        // the left/right keys, or swipe. Esc, the X, or a tap outside closes it.
         (function () {
             var gallery = document.getElementById('gallery');
             var box = document.getElementById('lightbox');
